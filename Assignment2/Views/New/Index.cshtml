@@ -1,0 +1,15 @@
+﻿@model IQueryable<News>
+@{
+    ViewData["Title"] = "News";
+}
+
+<h1>News</h1>
+
+@foreach (var newsArticle in Model)
+{
+    <div>
+        <h2>@newsArticle.Title</h2>
+        <p>@newsArticle.Content</p>
+        <p>Published: @newsArticle.PublishedDate</p>
+    </div>
+}

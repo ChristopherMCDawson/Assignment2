@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Assignment2.Data;
+﻿using Assignment2.Data;
 using Assignment2.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Assignment2.Controllers
 {
@@ -22,7 +17,7 @@ namespace Assignment2.Controllers
         // GET: Fans
         public async Task<IActionResult> Index()
         {
-              return View(await _context.Fans.ToListAsync());
+            return View(await _context.Fans.ToListAsync());
         }
 
         // GET: Fans/Details/5
@@ -148,14 +143,14 @@ namespace Assignment2.Controllers
             {
                 _context.Fans.Remove(fan);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool FanExists(int id)
         {
-          return _context.Fans.Any(e => e.Id == id);
+            return _context.Fans.Any(e => e.Id == id);
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Assignment2.Models
+﻿namespace Assignment2.Models
 {
     public class Subscription
     {

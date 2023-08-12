@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Assignment2.Data;
+﻿using Assignment2.Data;
 using Assignment2.Models;
 using Assignment2.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Assignment2.Controllers
 {
@@ -166,14 +161,14 @@ namespace Assignment2.Controllers
             {
                 _context.SportClubs.Remove(sportClub);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool SportClubExists(string id)
         {
-          return _context.SportClubs.Any(e => e.Id == id);
+            return _context.SportClubs.Any(e => e.Id == id);
         }
     }
 }

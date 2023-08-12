@@ -1,6 +1,5 @@
 using Assignment2.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 
 namespace Assignment2
 {

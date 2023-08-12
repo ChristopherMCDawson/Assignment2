@@ -23,5 +23,7 @@ namespace Assignment2.Data
             modelBuilder.Entity<Subscription>()
                 .HasKey(s => new { s.FanId, s.SportClubId });
         }
+
+        public DbSet<News> News { get; set; }
     }
 }
