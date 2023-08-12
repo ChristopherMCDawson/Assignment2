@@ -1,0 +1,75 @@
+﻿@model Assignment2.Models.ViewModels.NewsViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a href="@Url.Action("Create")">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Title
+            </th>
+            <th>
+                Fee
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.SportClubs)
+        {
+            string selectedRow = "";
+            if (item.Id.Equals(ViewData["SportClubId"]?.ToString()))
+            {
+                selectedRow = "success";
+            }
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Fee)
+                </td>
+                <td>
+                    <a href="@Url.Action("Index", new { id = item.Id })">Select</a> |
+                    <a href="@Url.Action("Edit", new { id = item.Id })">Edit</a> |
+                    <a href="@Url.Action("Details", new { id = item.Id })">Details</a> |
+                    <a href="@Url.Action("Delete", new { id = item.Id })">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (Model.Fans != null)
+{
+    <h3>
+        Subscribers to the Sport Club:
+    </h3>
+    <table class="table">
+        <tr>
+            @if (Model.Fans.Count() > 0)
+            {
+                <th>Name</th>
+            }
+            else
+            {
+                <th>No subscribers</th>
+            }
+        </tr>
+        @foreach (var item in Model.Fans)
+        {
+            <tr>
+                <td>
+                    @item.FullName
+                </td>
+            </tr>
+        }
+    </table>
+}
