@@ -3,6 +3,7 @@ using Assignment2.Models;
 using Assignment2.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Assignment2.Controllers
 {
@@ -21,6 +22,8 @@ namespace Assignment2.Controllers
             var viewModel = new NewsViewModel
             {
                 SportClubs = await _context.SportClubs
+                .Include(i => i.Subscriptions)
+                .AsNoTracking()
                 .OrderBy(i => i.Title)
                 .ToListAsync()
             };
@@ -28,11 +31,9 @@ namespace Assignment2.Controllers
 
             if (id != null)
             {
-                ViewData["SportClubId"] = id;
-                viewModel.Fans = _context.Subscriptions
-                .Where(s => s.SportClubId == id)
-                .Select(s => s.Fan)
-                .ToList();
+                ViewData["SportClubId"] = ID;
+                var fanIds = _context.Subscriptions.Where(s => s.SportClubId == ID).Select(s => s.FanId).ToList();
+                viewModel.Fans = await _context.Fans.Where(f => fanIds.Contains(f.ID)).ToListAsync();
             }
 
             return View(viewModel);
