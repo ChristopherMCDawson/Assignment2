@@ -1,11 +1,20 @@
-﻿namespace Assignment2.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+
+namespace Assignment2.Models
 {
     public class News
     {
-        public int Id { get; set; }
-        public string Title { get; set; }
-        public string Content { get; set; }
-        public DateTime PublishedDate { get; set; }
-        public string ImagePath { get; set; }
+        public int NewsId { get; set; }
+
+
+        [StringLength(255)]
+        [Display(Name = "File Name")]
+        public string FileName { get; set;}
+
+        [Url]
+        public string Url { get; set;}
+        public string SportClubId { get; set;}
+        public SportClub SportClub { get; set;}
     }
 }
