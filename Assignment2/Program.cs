@@ -13,6 +13,7 @@ namespace Assignment2
             // Add services to the container.
 
             builder.Services.AddControllersWithViews();
+            builder.Services.AddRazorPages();
             var blobConnection = builder.Configuration.GetConnectionString("AzureBlobStorage");
             builder.Services.AddSingleton(new BlobServiceClient(blobConnection));
 
