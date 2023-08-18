@@ -5,27 +5,24 @@ namespace Assignment2.Data
 {
     public class SportsDbContext : DbContext
     {
-        public DbSet<Fan> Fans { get; set; }
-        public DbSet<Subscription> Subscriptions { get; set; }
-        public DbSet<SportClub> SportClub { get; set; }
-        public DbSet<News> News { get; set; }
-
-
         public SportsDbContext(DbContextOptions<SportsDbContext> options) : base(options)
         {
 
         }
 
+        public DbSet<Fan> Fans { get; set; }
+        public DbSet<SportClub> SportClubs { get; set; }
+        public DbSet<Subscription> Subscriptions { get; set; }
+        public DbSet<News> News { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Fan>().ToTable("Fan");
-            modelBuilder.Entity<Subscription>().ToTable("Subscription");
-            modelBuilder.Entity<SportClub>().ToTable("SportClub");
+            modelBuilder.Entity<Subscription>().HasKey(s => new { s.FanId, s.SportClubId });
             modelBuilder.Entity<News>().ToTable("news");
-            modelBuilder.Entity<Subscription>()
-                .HasKey(s => new { s.FanID, s.SportClubID });
-        }
+            modelBuilder.Entity<Fan>().ToTable("Fan");
+            modelBuilder.Entity<SportClub>().ToTable("SportClub");
+            modelBuilder.Entity<Subscription>().ToTable("Subscription");
 
+        }
 
     }
 }

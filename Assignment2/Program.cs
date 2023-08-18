@@ -11,7 +11,11 @@ namespace Assignment2
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+
             builder.Services.AddControllersWithViews();
+            var blobConnection = builder.Configuration.GetConnectionString("AzureBlobStorage");
+            builder.Services.AddSingleton(new BlobServiceClient(blobConnection));
+
             var connection = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<SportsDbContext>(options => options.UseSqlServer(connection));
             builder.Services.AddSession();

@@ -1,5 +1,6 @@
-﻿using System.ComponentModel;
+﻿using Assignment2.Models;
 using System.ComponentModel.DataAnnotations;
+using System.Xml.Linq;
 
 namespace Assignment2.Models
 {
@@ -7,24 +8,28 @@ namespace Assignment2.Models
     {
         public int ID { get; set; }
 
-        [Required(ErrorMessage = "Last name is required")]
-        [StringLength(50, ErrorMessage = "Last Name cannot be larger than 40 characters")]
-        [DisplayName("Last Name")]
+        [Required]
+        [StringLength(50)]
+        [Display(Name = "Last Name")]
         public string LastName { get; set; }
-
-        [Required(ErrorMessage = "First name is required")]
-        [StringLength(50, ErrorMessage = "First Name cannot be larger than 40 characters")]
-        [DisplayName("First Name")]
+        [Required]
+        [StringLength(50)]
+        [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        [DisplayName("Birth Date")]
+        [Display(Name = "Birth Date")]
         public DateTime BirthDate { get; set; }
+        public string FullName
+        {
+            get
+            {
+                return LastName + ", " + FirstName;
+            }
+        }
 
-        public string FullName => $"{LastName}, {FirstName}";
 
         public ICollection<Subscription> Subscriptions { get; set; }
     }
-
 }

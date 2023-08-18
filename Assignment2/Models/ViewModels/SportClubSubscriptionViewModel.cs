@@ -1,6 +1,5 @@
 ﻿using Assignment2.Models;
 
-
 namespace Assignment2.Models.ViewModels
 {
     public class SportClubSubscriptionViewModel
@@ -9,4 +8,5 @@ namespace Assignment2.Models.ViewModels
         public string Title { get; set; }
         public bool IsMember { get; set; }
     }
+
 }

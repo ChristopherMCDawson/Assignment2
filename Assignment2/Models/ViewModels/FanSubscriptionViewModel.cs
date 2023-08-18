@@ -1,4 +1,5 @@
-﻿using Assignment2.Models;
+﻿using Assignment2.Models.ViewModels;
+using Assignment2.Models;
 
 namespace Assignment2.Models.ViewModels
 {
@@ -7,4 +8,5 @@ namespace Assignment2.Models.ViewModels
         public Fan Fan { get; set; }
         public IEnumerable<SportClubSubscriptionViewModel> Subscriptions { get; set; }
     }
+
 }

@@ -10,8 +10,8 @@
 </h1>
 
 <p>
-    <a  asp-action="Create" asp-route-id="@Model.News.SportClub.ID">Upload New</a>
-    <a  asp-action="Index" asp-controller="SportClubs">Back to List</a>
+    <a asp-action="Create" asp-route-id="@Model.SportClub.Id">Upload New</a>
+    <a asp-action="Index" asp-controller="SportClubs">Back to List</a>
 </p>
 <div>
     @if (Model.News.Count() > 0)
@@ -51,6 +51,6 @@
     }
     else
     {
-        <p>There are no files to display.</p>
+        <p>no files to display.</p>
     }
 </div>

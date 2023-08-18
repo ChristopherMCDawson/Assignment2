@@ -1,13 +1,13 @@
-﻿using Assignment2.Data;
-using Assignment2.Models;
-using Assignment2.Models.ViewModels;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Assignment2.Data;
+using Assignment2.Models;
+using Assignment2.Models.ViewModels;
 
 namespace Assignment2.Controllers
 {
@@ -34,12 +34,60 @@ namespace Assignment2.Controllers
             if (ID != null)
             {
                 ViewData["ClubID"] = ID;
-                var clubIds = _context.Subscriptions.Where(f => f.FanID == ID).Select(f => f.SportClubID).ToList();
-                viewModel.SportClubs = await _context.SportClub.Where(s => clubIds.Contains(s.ID)).ToListAsync();
+                var clubIds = _context.Subscriptions.Where(f => f.FanId == ID).Select(f => f.SportClubId).ToList();
+                viewModel.SportClubs = await _context.SportClubs.Where(s => clubIds.Contains(s.Id)).ToListAsync();
 
             }
             return View(viewModel);
         }
+        public async Task<IActionResult> EditSubscriptions(int? ID)
+        {
+            if (ID == null)
+            {
+                return NotFound();
+            }
+            var clubs = await _context.SportClubs.ToListAsync();
+            var fan = await _context.Fans.Include(i => i.Subscriptions).FirstOrDefaultAsync(f => f.ID == ID);
+
+            var viewModel = new FanSubscriptionViewModel
+            {
+                Fan = fan,
+                Subscriptions = clubs.Select(sport => new SportClubSubscriptionViewModel
+                {
+                    SportClubId = sport.Id,
+                    Title = sport.Title,
+                    IsMember = fan.Subscriptions?.Any(sub => sub.SportClubId == sport.Id) ?? false
+                })
+            };
+
+            return View(viewModel);
+        }
+        public async Task<IActionResult> AddSub(int fanID, string clubID)
+        {
+            var fan = await _context.Fans.Include(i => i.Subscriptions).FirstOrDefaultAsync(f => f.ID == fanID);
+            if (fan != null)
+            {
+                fan.Subscriptions.Add(new Subscription { FanId = fanID, SportClubId = clubID });
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(EditSubscriptions), new { ID = fanID });
+        }
+
+        public async Task<IActionResult> RemoveSub(int fanID, string clubID)
+        {
+            var fan = await _context.Fans.Include(i => i.Subscriptions).FirstOrDefaultAsync(f => f.ID == fanID);
+            if (fan != null)
+            {
+                var subscription = fan.Subscriptions.FirstOrDefault(s => s.SportClubId == clubID);
+                if (subscription != null)
+                {
+                    _context.Subscriptions.Remove(subscription);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            return RedirectToAction(nameof(EditSubscriptions), new { ID = fanID });
+        }
+
 
         // GET: Fans/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -65,39 +113,12 @@ namespace Assignment2.Controllers
             return View();
         }
 
-        public async Task<IActionResult> AddSub(int fanID, string clubID)
-        {
-            var fan = await _context.Fans.Include(i => i.Subscriptions).FirstOrDefaultAsync(f => f.ID == fanID);
-            if (fan != null)
-            {
-                fan.Subscriptions.Add(new Subscription { FanID = fanID, SportClubID = clubID });
-                await _context.SaveChangesAsync();
-            }
-            return RedirectToAction(nameof(EditSubscriptions), new { ID = fanID });
-        }
-
-        public async Task<IActionResult> RemoveSub(int fanID, string clubID)
-        {
-            var fan = await _context.Fans.Include(i => i.Subscriptions).FirstOrDefaultAsync(f => f.ID == fanID);
-            if (fan != null)
-            {
-                var subscription = fan.Subscriptions.FirstOrDefault(s => s.SportClubID == clubID);
-                if (subscription != null)
-                {
-                    _context.Subscriptions.Remove(subscription);
-                    await _context.SaveChangesAsync();
-                }
-            }
-
-            return RedirectToAction(nameof(EditSubscriptions), new { ID = fanID });
-        }
-
         // POST: Fans/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,LastName,FirstName,BirthDate")] Fan fan)
+        public async Task<IActionResult> Create([Bind("ID,LastName,FirstName,BirthDate")] Fan fan)
         {
             if (ModelState.IsValid)
             {
@@ -129,7 +150,7 @@ namespace Assignment2.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,LastName,FirstName,BirthDate")] Fan fan)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,LastName,FirstName,BirthDate")] Fan fan)
         {
             if (id != fan.ID)
             {
@@ -196,36 +217,9 @@ namespace Assignment2.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> EditSubscriptions(int? ID)
-        {
-            if (ID == null)
-            {
-                return NotFound();
-            }
-            var clubs = await _context.SportClub.ToListAsync();
-            var fan = await _context.Fans.Include(i => i.Subscriptions).FirstOrDefaultAsync(f => f.ID == ID);
-
-            var viewModel = new FanSubscriptionViewModel
-            {
-                Fan = fan,
-                Subscriptions = clubs.Select(sport => new SportClubSubscriptionViewModel
-                {
-                    SportClubId = sport.ID,
-                    Title = sport.Title,
-                    IsMember = fan.Subscriptions?.Any(sub => sub.SportClubID == sport.ID) ?? false
-                })
-            };
-            return View(viewModel);
-        }
-
-
         private bool FanExists(int id)
         {
             return _context.Fans.Any(e => e.ID == id);
         }
     }
-
-  
-
-
 }

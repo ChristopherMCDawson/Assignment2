@@ -1,6 +1,6 @@
 ﻿using Assignment2.Models;
 
-namespace A2.Models.ViewModels
+namespace Assignment2.Models.ViewModels
 {
     public class NewsViewModel
     {

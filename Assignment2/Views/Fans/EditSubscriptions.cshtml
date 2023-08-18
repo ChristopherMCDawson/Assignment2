@@ -1,0 +1,47 @@
+﻿@model Assignment2.Models.ViewModels.FanSubscriptionViewModel;
+
+@{
+    ViewData["Title"] = "EditSubscriptions";
+}
+
+<h1>EditSubscriptions</h1>
+
+<h4>Fan</h4>
+<hr />
+<table>
+    <tr>
+        <td><strong>Full Name:</strong></td>
+        <td>&emsp;&emsp;&emsp;&emsp;&emsp;</td>
+        <td>@Html.DisplayFor(ModelItem => Model.Fan.FullName)</td>
+    </tr>
+</table>
+<hr />
+<br />
+<br />
+
+@if (Model.Fan != null)
+{
+
+    <table class="table">
+        @foreach (var subs in Model.Subscriptions)
+        {
+            <tr>
+                <td>@subs.Title</td>
+                <td>
+                    <a asp-action="@(subs.IsMember ? "RemoveSub" : "AddSub")" asp-route-fanId="@Model.Fan.ID"
+                       asp-route-clubId="@subs.SportClubId">
+                        @(subs.IsMember ? "Unregister" : "Register")
+                    </a>
+                </td>
+            </tr>
+        }
+    </table>
+    <a class="button-gray" asp-action="Index">Back to List</a>
+}
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

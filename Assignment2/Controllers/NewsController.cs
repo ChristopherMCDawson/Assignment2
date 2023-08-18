@@ -32,12 +32,12 @@ namespace Assignment2.Controllers
             var viewModel = new NewsViewModel
             {
                 News = await _context.News
-                    .Include(i => i.SportClub)
+                    .Include(i => i.SportsClub)
                     .AsNoTracking()
                     .Where(s => s.SportClubId == id)
                     .ToListAsync(),
 
-                SportClub = (IEnumerable<SportClub>)await _context.SportClub.FindAsync(id)
+                SportClub = await _context.SportClubs.FindAsync(id)
             };
 
             return View(viewModel);
@@ -47,7 +47,7 @@ namespace Assignment2.Controllers
         // GET: News/Create
         public async Task<IActionResult> Create(string id)
         {
-            var club = await _context.SportClub.FirstOrDefaultAsync(s => s.ID.Equals(id));
+            var club = await _context.SportClubs.FirstOrDefaultAsync(s => s.Id.Equals(id));
             var viewModel = new FileInputViewModel
             {
                 SportClubId = id
@@ -142,7 +142,7 @@ namespace Assignment2.Controllers
                 return NotFound();
             }
 
-            var club = await _context.SportClub.FirstOrDefaultAsync(n => n.ID.Equals(news.SportClubId));
+            var club = await _context.SportClubs.FirstOrDefaultAsync(n => n.Id.Equals(news.SportClubId));
             if (club == null)
             {
                 return BadRequest();

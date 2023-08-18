@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Assignment2.Data;
+﻿using Assignment2.Data;
 using Assignment2.Models;
 using Assignment2.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Assignment2.Controllers
 {
@@ -25,7 +20,7 @@ namespace Assignment2.Controllers
         {
             var viewModel = new SportClubViewModel
             {
-                SportClubs = await _context.SportClub
+                SportClubs = await _context.SportClubs
                 .Include(i => i.Subscriptions)
                 .AsNoTracking()
                 .OrderBy(i => i.Title)
@@ -34,7 +29,7 @@ namespace Assignment2.Controllers
             if (ID != null)
             {
                 ViewData["ClubID"] = ID;
-                var fanIds = _context.Subscriptions.Where(s => s.SportClubID == ID).Select(s => s.FanID).ToList();
+                var fanIds = _context.Subscriptions.Where(s => s.SportClubId == ID).Select(s => s.FanId).ToList();
                 viewModel.Fans = await _context.Fans.Where(f => fanIds.Contains(f.ID)).ToListAsync();
 
             }
@@ -44,13 +39,13 @@ namespace Assignment2.Controllers
         // GET: SportClubs/Details/5
         public async Task<IActionResult> Details(string id)
         {
-            if (id == null || _context.SportClub == null)
+            if (id == null || _context.SportClubs == null)
             {
                 return NotFound();
             }
 
-            var sportClub = await _context.SportClub
-                .FirstOrDefaultAsync(m => m.ID == id);
+            var sportClub = await _context.SportClubs
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (sportClub == null)
             {
                 return NotFound();
@@ -84,12 +79,12 @@ namespace Assignment2.Controllers
         // GET: SportClubs/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
-            if (id == null || _context.SportClub == null)
+            if (id == null || _context.SportClubs == null)
             {
                 return NotFound();
             }
 
-            var sportClub = await _context.SportClub.FindAsync(id);
+            var sportClub = await _context.SportClubs.FindAsync(id);
             if (sportClub == null)
             {
                 return NotFound();
@@ -104,7 +99,7 @@ namespace Assignment2.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("Id,Title,Fee")] SportClub sportClub)
         {
-            if (id != sportClub.ID)
+            if (id != sportClub.Id)
             {
                 return NotFound();
             }
@@ -118,7 +113,7 @@ namespace Assignment2.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!SportClubExists(sportClub.ID))
+                    if (!SportClubExists(sportClub.Id))
                     {
                         return NotFound();
                     }
@@ -140,9 +135,9 @@ namespace Assignment2.Controllers
                 return NotFound();
             }
 
-            var sportClub = await _context.SportClub
+            var sportClub = await _context.SportClubs
                 .Include(sc => sc.News) // Include News navigation property
-                .FirstOrDefaultAsync(m => m.ID == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (sportClub == null)
             {
@@ -162,9 +157,9 @@ namespace Assignment2.Controllers
                 return NotFound();
             }
 
-            var sportClub = await _context.SportClub
+            var sportClub = await _context.SportClubs
                 .Include(sc => sc.News) // Include News navigation property
-                .FirstOrDefaultAsync(s => s.ID == id);
+                .FirstOrDefaultAsync(s => s.Id == id);
 
             if (sportClub == null)
             {
@@ -176,14 +171,14 @@ namespace Assignment2.Controllers
                 return View("Error"); // Show an error view if the sports club has news
             }
 
-            _context.SportClub.Remove(sportClub);
+            _context.SportClubs.Remove(sportClub);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool SportClubExists(string id)
         {
-            return _context.SportClub.Any(e => e.ID == id);
+            return _context.SportClubs.Any(e => e.Id == id);
         }
     }
 }
