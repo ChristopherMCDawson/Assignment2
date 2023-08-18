@@ -8,6 +8,8 @@ namespace Assignment2.Data
         public DbSet<Fan> Fans { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
         public DbSet<SportClub> SportClubs { get; set; }
+        public DbSet<News> News { get; set; }
+
 
         public SportsDbContext(DbContextOptions<SportsDbContext> options) : base(options)
         {
@@ -19,11 +21,11 @@ namespace Assignment2.Data
             modelBuilder.Entity<Fan>().ToTable("Fan");
             modelBuilder.Entity<Subscription>().ToTable("Subscription");
             modelBuilder.Entity<SportClub>().ToTable("SportClub");
-
+            modelBuilder.Entity<News>().ToTable("news");
             modelBuilder.Entity<Subscription>()
                 .HasKey(s => new { s.FanId, s.SportClubId });
         }
 
-        public DbSet<News> News { get; set; }
+
     }
 }
