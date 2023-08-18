@@ -1,15 +1,56 @@
-﻿@model IQueryable<News>
+﻿﻿@model Assignment2.Models.ViewModels.NewsViewModel
+
 @{
-    ViewData["Title"] = "News";
+    ViewData["Title"] = "Index";
 }
 
-<h1>News</h1>
+<h1>
+    Show news for @Model.SportClub.Title
 
-@foreach (var newsArticle in Model)
-{
-    <div>
-        <h2>@newsArticle.Title</h2>
-        <p>@newsArticle.Content</p>
-        <p>Published: @newsArticle.PublishedDate</p>
-    </div>
-}
+</h1>
+
+<p>
+    <a  asp-action="Create" asp-route-id="@Model.SportClub.Id">Upload New</a>
+    <a  asp-action="Index" asp-controller="SportClubs">Back to List</a>
+</p>
+<div>
+    @if (Model.News.Count() > 0)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        FILE NAME
+                    </th>
+                    <th>
+                        IMAGE
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model.News)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FileName)
+                        </td>
+                        <td>
+                            <img src="@item.Url" alt="@item.FileName" style="max-width: 400px;" />
+                        </td>
+
+                        <td>
+                            <a class="button-red" asp-action="Delete" asp-route-id="@item.NewsId">Delete</a>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>There are no files to display.</p>
+    }
+</div>

@@ -1,0 +1,46 @@
+﻿@model A2.Models.ViewModels.FileInputViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Upload an add for @Model.SportClubTitle</h4>
+
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form enctype="multipart/form-data" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <!-- form fields for Prediction properties -->
+            <div class="form-group">
+                <label for="file-upload" class="button-blue">
+                    <span>Select file</span>
+                    <input id="file-upload" type="file" name="file" onchange="filename()" />
+                </label>
+
+                <br />
+
+            </div>
+            <hr />
+            <div class="form-group">
+
+                <input type="submit" value="Upload Now" class="button-green" /> |
+                <a class="button-gray" asp-action="Index" asp-route-id="@Model.SportClubId">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<script>
+    function filename() {
+        document.getElementById("filename").innerHTML = document.getElementById('file-upload').files[0].name;
+    }
+</script>
