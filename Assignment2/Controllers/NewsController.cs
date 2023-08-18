@@ -1,90 +1,153 @@
 ﻿using Assignment2.Data;
 using Assignment2.Models;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Azure.Storage.Blobs;
+using Azure;
+using System.Security.Cryptography;
+using Microsoft.EntityFrameworkCore;
+using Assignment2.Models.ViewModels;
 
 namespace Assignment2.Controllers
 {
 
     public class NewsController : Controller
     {
-        private readonly NewsRepository _newsRepository;
+        private readonly SportsDbContext _context;
+        private readonly BlobServiceClient _blobServiceClient;
+        private readonly string containerName = "news";
 
-        public NewsController(NewsRepository newsRepository)
+        public NewsController(BlobServiceClient blobServiceClient, SportsDbContext context)
         {
-            _newsRepository = newsRepository;
+            _context = context;
+            _blobServiceClient = blobServiceClient;
         }
 
         // GET: News
-        public IActionResult Index()
+        public async Task<IActionResult> Index(string id)
         {
-            var news = _newsRepository.GetAllNews();
-            return View(news);
+            var viewModel = new NewsViewModel
+            {
+                News = await _context.News
+                             .Include(i => i.SportsClub)
+                             .AsNoTracking()
+                             .Where(s => s.SportClubId == id)
+                             .ToListAsync(),
+
+                SportClub = await _context.SportClubs.FindAsync(id)
+            };
+
+            return View(viewModel);
+
         }
 
         // GET: News/Create
-        public IActionResult Create()
+        public async Task <IActionResult> Create(string id)
         {
-            return View();
+            var club = await _context.SportClubs.FirstOrDefaultAsync(s => s.Id.Equals(id));
+            var viewModel = new FileInputViewModel
+            {
+                SportClubId = id
+            };
+            if (club != null)
+            {
+                viewModel.SportClubTitle = club.Title;
+            }
+
+            return View(viewModel);
         }
 
         // POST: News/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(News news, IFormFile imageFile)
+        public IActionResult Create(string id,News news, IFormFile imageFile)
         {
-            if (ModelState.IsValid)
+            if (file == null || file.Length == 0 || !ModelState.IsValid)
             {
-                _newsRepository.AddNews(news, imageFile);
-                _newsRepository.SaveChanges();
-                return RedirectToAction(nameof(Index));
+                return View("Error");
             }
+
+            BlobContainerClient containerClient;
+            // Create the container and return a container client object
+            try
+            {
+                containerClient = await _blobServiceClient.CreateBlobContainerAsync(containerName);
+                // Give access to public
+                containerClient.SetAccessPolicy(Azure.Storage.Blobs.Models.PublicAccessType.BlobContainer);
+            }
+            catch (RequestFailedException)
+            {
+                containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
+            }
+
+            try
+            {
+                string randomFileName = Path.GetRandomFileName();
+                // create the blob to hold the data
+                var blockBlob = containerClient.GetBlobClient(randomFileName);
+                if (await blockBlob.ExistsAsync())
+                {
+                    await blockBlob.DeleteAsync();
+                }
+
+                using (var memoryStream = new MemoryStream())
+                {
+                    // copy the file data into memory
+                    await file.CopyToAsync(memoryStream);
+
+                    // navigate back to the beginning of the memory stream
+                    memoryStream.Position = 0;
+
+                    // send the file to the cloud
+                    await blockBlob.UploadAsync(memoryStream);
+                    memoryStream.Close();
+                }
+                // Save the prediction to the database
+                news.FileName = randomFileName;
+                news.Url = blockBlob.Uri.ToString();
+                news.SportClubId = id;
+            }
+            catch (RequestFailedException)
+            {
+                return RedirectToAction(nameof(Index), new { id });
+            }
+
+            if (news != null && ModelState.IsValid)
+            {
+                _context.News.Add(news);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index), new { id });
+        }
+
+        // GET: News/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null || _context.News == null)
+            {
+                return NotFound();
+            }
+
+            var news = await _context.News
+                .FirstOrDefaultAsync(m => m.NewsId == id);
+            if (news == null)
+            {
+                return NotFound();
+            }
+
+            var club = await _context.SportClubs.FirstOrDefaultAsync(n => n.Id.Equals(news.SportClubId));
+            if (club == null)
+            {
+                return BadRequest();
+            }
+
             return View(news);
         }
 
-        // GET: News/Edit/5
-        public IActionResult Edit(int id)
-        {
-            var newsArticle = _newsRepository.GetNewsById(id);
-
-            if (newsArticle == null)
-            {
-                return NotFound();
-            }
-
-            return View(newsArticle);
-        }
-
-        // POST: News/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, News news, IFormFile imageFile)
-        {
-            if (id != news.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                _newsRepository.UpdateNews(news, imageFile);
-                _newsRepository.SaveChanges();
-                return RedirectToAction(nameof(Index));
-            }
-
-            return View(news);
-        }
-
-        // GET: News/Details/5
-        public IActionResult Details(int id)
-        {
-            var newsArticle = _newsRepository.GetNewsById(id);
-
-            if (newsArticle == null)
-            {
-                return NotFound();
-            }
-
-            return View(newsArticle);
-        }
     }
 }
