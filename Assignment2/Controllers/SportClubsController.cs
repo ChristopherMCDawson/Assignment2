@@ -4,6 +4,10 @@ using Assignment2.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Assignment2.Controllers
 {
@@ -139,6 +143,7 @@ namespace Assignment2.Controllers
             }
 
             var sportClub = await _context.SportClubs
+                .Include(sc => sc.News)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (sportClub == null)
             {
@@ -153,16 +158,26 @@ namespace Assignment2.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            if (_context.SportClubs == null)
+            if (id == null)
             {
-                return Problem("Entity set 'SportsDbContext.SportClubs'  is null.");
-            }
-            var sportClub = await _context.SportClubs.FindAsync(id);
-            if (sportClub != null)
-            {
-                _context.SportClubs.Remove(sportClub);
+                return NotFound();
             }
 
+            var sportClub = await _context.SportClubs
+                .Include(sc => sc.News) 
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (sportClub == null)
+            {
+                return NotFound();
+            }
+
+            if (sportClub.News != null && sportClub.News.Any())
+            {
+                return View("Error"); // Show an error view if the sports club has news
+            }
+
+            _context.SportClubs.Remove(sportClub);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
