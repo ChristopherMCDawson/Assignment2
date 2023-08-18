@@ -149,5 +149,28 @@ namespace Assignment2.Controllers
             return View(news);
         }
 
+        // POST: News/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            if (_context.News == null)
+            {
+                return Problem("Entity set 'SportsDbContext.News'  is null.");
+            }
+            var news = await _context.News.FindAsync(id);
+            if (news != null)
+            {
+                _context.News.Remove(news);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index), new { id = news.SportClubId });
+        }
+
+        private bool NewsExists(string id)
+        {
+            return _context.News.Any(e => e.SportClubId == id);
+        }
     }
 }
