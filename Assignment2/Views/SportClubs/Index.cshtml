@@ -1,4 +1,4 @@
-﻿@model Assignment2.Models
+﻿@model Assignment2.Models.ViewModels.SportClubViewModel
 
 
 @{
@@ -23,10 +23,10 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.SportClub)
+        @foreach (var item in Model.SportClubs)
         {
             string selectedRow = "";
-            if (item.Id.Equals(ViewData["SportClubId"]?.ToString()))
+            if (item.ID.Equals(ViewData["SportClubId"]?.ToString()))
             {
                 selectedRow = "success";
             }
@@ -38,10 +38,10 @@
                     @Html.DisplayFor(modelItem => item.Fee)
                 </td>
                 <td>
-                    <a href="@Url.Action("Index", new { id = item.Id })">Select</a> |
-                    <a href="@Url.Action("Edit", new { id = item.Id })">Edit</a> |
-                    <a href="@Url.Action("Details", new { id = item.Id })">Details</a> |
-                    <a href="@Url.Action("Delete", new { id = item.Id })">Delete</a>
+                    <a href="@Url.Action("Index", new { id = item.ID })">Select</a> |
+                    <a href="@Url.Action("Edit", new { id = item.ID })">Edit</a> |
+                    <a href="@Url.Action("Details", new { id = item.ID })">Details</a> |
+                    <a href="@Url.Action("Delete", new { id = item.ID })">Delete</a>
                 </td>
             </tr>
         }

@@ -34,8 +34,8 @@ namespace Assignment2.Controllers
             if (ID != null)
             {
                 ViewData["ClubID"] = ID;
-                var clubIds = _context.Subscriptions.Where(f => f.FanId == ID).Select(f => f.SportClubId).ToList();
-                viewModel.SportClubs = await _context.SportClubs.Where(s => clubIds.Contains(s.Id)).ToListAsync();
+                var clubIds = _context.Subscriptions.Where(f => f.FanID == ID).Select(f => f.SportClubID).ToList();
+                viewModel.SportClubs = await _context.SportClub.Where(s => clubIds.Contains(s.ID)).ToListAsync();
 
             }
             return View(viewModel);
@@ -70,7 +70,7 @@ namespace Assignment2.Controllers
             var fan = await _context.Fans.Include(i => i.Subscriptions).FirstOrDefaultAsync(f => f.ID == fanID);
             if (fan != null)
             {
-                fan.Subscriptions.Add(new Subscription { FanId = fanID, SportClubId = clubID });
+                fan.Subscriptions.Add(new Subscription { FanID = fanID, SportClubID = clubID });
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction(nameof(EditSubscriptions), new { ID = fanID });
@@ -81,7 +81,7 @@ namespace Assignment2.Controllers
             var fan = await _context.Fans.Include(i => i.Subscriptions).FirstOrDefaultAsync(f => f.ID == fanID);
             if (fan != null)
             {
-                var subscription = fan.Subscriptions.FirstOrDefault(s => s.SportClubId == clubID);
+                var subscription = fan.Subscriptions.FirstOrDefault(s => s.SportClubID == clubID);
                 if (subscription != null)
                 {
                     _context.Subscriptions.Remove(subscription);
@@ -131,7 +131,7 @@ namespace Assignment2.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,LastName,FirstName,BirthDate")] Fan fan)
         {
-            if (id != fan.Id)
+            if (id != fan.ID)
             {
                 return NotFound();
             }
@@ -145,7 +145,7 @@ namespace Assignment2.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!FanExists(fan.Id))
+                    if (!FanExists(fan.ID))
                     {
                         return NotFound();
                     }
@@ -202,7 +202,7 @@ namespace Assignment2.Controllers
             {
                 return NotFound();
             }
-            var clubs = await _context.SportClubs.ToListAsync();
+            var clubs = await _context.SportClub.ToListAsync();
             var fan = await _context.Fans.Include(i => i.Subscriptions).FirstOrDefaultAsync(f => f.ID == ID);
 
             var viewModel = new FanSubscriptionViewModel
@@ -210,9 +210,9 @@ namespace Assignment2.Controllers
                 Fan = fan,
                 Subscriptions = clubs.Select(sport => new SportClubSubscriptionViewModel
                 {
-                    SportClubId = sport.Id,
+                    SportClubId = sport.ID,
                     Title = sport.Title,
-                    IsMember = fan.Subscriptions?.Any(sub => sub.SportClubId == sport.Id) ?? false
+                    IsMember = fan.Subscriptions?.Any(sub => sub.SportClubID == sport.ID) ?? false
                 })
             };
             return View(viewModel);
@@ -221,7 +221,7 @@ namespace Assignment2.Controllers
 
         private bool FanExists(int id)
         {
-            return _context.Fans.Any(e => e.Id == id);
+            return _context.Fans.Any(e => e.ID == id);
         }
     }
 

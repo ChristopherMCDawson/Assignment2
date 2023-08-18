@@ -7,8 +7,8 @@ namespace Assignment2.Models
 {
     public class Subscription
     {
-        public int FanId { get; set; }
-        public string SportClubId { get; set; }
+        public int FanID { get; set; }
+        public string SportClubID { get; set; }
 
     }
 }

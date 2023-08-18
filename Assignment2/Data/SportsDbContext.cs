@@ -7,7 +7,7 @@ namespace Assignment2.Data
     {
         public DbSet<Fan> Fans { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
-        public DbSet<SportClub> SportClubs { get; set; }
+        public DbSet<SportClub> SportClub { get; set; }
         public DbSet<News> News { get; set; }
 
 
@@ -23,7 +23,7 @@ namespace Assignment2.Data
             modelBuilder.Entity<SportClub>().ToTable("SportClub");
             modelBuilder.Entity<News>().ToTable("news");
             modelBuilder.Entity<Subscription>()
-                .HasKey(s => new { s.FanId, s.SportClubId });
+                .HasKey(s => new { s.FanID, s.SportClubID });
         }
 
 

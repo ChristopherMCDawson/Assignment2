@@ -11,7 +11,7 @@ namespace Assignment2.Models
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [DisplayName("Registration Number")]
         [Required(ErrorMessage = "Registration number is required.")]
-        public string Id { get; set; }
+        public string ID { get; set; }
 
         [Required(ErrorMessage = "Title is required.")]
         [StringLength(50, MinimumLength = 3, ErrorMessage = "Title length should be between 3 and 50 characters.")]

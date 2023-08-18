@@ -1,20 +1,19 @@
-﻿using Assignment2.Data;
-using Assignment2.Models;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Assignment2.Data;
+using Assignment2.Models;
+using Assignment2.Models.ViewModels;
 using Azure.Storage.Blobs;
 using Azure;
 using System.Security.Cryptography;
-using Microsoft.EntityFrameworkCore;
-using Assignment2.Models.ViewModels;
 
 namespace Assignment2.Controllers
 {
-
     public class NewsController : Controller
     {
         private readonly SportsDbContext _context;
@@ -33,12 +32,12 @@ namespace Assignment2.Controllers
             var viewModel = new NewsViewModel
             {
                 News = await _context.News
-                             .Include(i => i.SportsClub)
-                             .AsNoTracking()
-                             .Where(s => s.SportClubId == id)
-                             .ToListAsync(),
+                    .Include(i => i.SportClub)
+                    .AsNoTracking()
+                    .Where(s => s.SportClubId == id)
+                    .ToListAsync(),
 
-                SportClub = await _context.SportClubs.FindAsync(id)
+                SportClub = (IEnumerable<SportClub>)await _context.SportClub.FindAsync(id)
             };
 
             return View(viewModel);
@@ -46,9 +45,9 @@ namespace Assignment2.Controllers
         }
 
         // GET: News/Create
-        public async Task <IActionResult> Create(string id)
+        public async Task<IActionResult> Create(string id)
         {
-            var club = await _context.SportClubs.FirstOrDefaultAsync(s => s.Id.Equals(id));
+            var club = await _context.SportClub.FirstOrDefaultAsync(s => s.ID.Equals(id));
             var viewModel = new FileInputViewModel
             {
                 SportClubId = id
@@ -61,10 +60,12 @@ namespace Assignment2.Controllers
             return View(viewModel);
         }
 
-        // POST: News/Create
+        // POST: News/Create*
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(string id,News news, IFormFile imageFile)
+        public async Task<IActionResult> Create(string id, News news, IFormFile file)
         {
             if (file == null || file.Length == 0 || !ModelState.IsValid)
             {
@@ -125,6 +126,7 @@ namespace Assignment2.Controllers
             return RedirectToAction(nameof(Index), new { id });
         }
 
+
         // GET: News/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -140,7 +142,7 @@ namespace Assignment2.Controllers
                 return NotFound();
             }
 
-            var club = await _context.SportClubs.FirstOrDefaultAsync(n => n.Id.Equals(news.SportClubId));
+            var club = await _context.SportClub.FirstOrDefaultAsync(n => n.ID.Equals(news.SportClubId));
             if (club == null)
             {
                 return BadRequest();

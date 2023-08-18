@@ -1,13 +1,13 @@
-﻿using Assignment2.Data;
-using Assignment2.Models;
-using Assignment2.Models.ViewModels;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Assignment2.Data;
+using Assignment2.Models;
+using Assignment2.Models.ViewModels;
 
 namespace Assignment2.Controllers
 {
@@ -21,38 +21,36 @@ namespace Assignment2.Controllers
         }
 
         // GET: SportClubs
-        public async Task<IActionResult> Index(string id)
+        public async Task<IActionResult> Index(String? ID)
         {
-            var viewModel = new NewsViewModel
+            var viewModel = new SportClubViewModel
             {
-                SportClubs = await _context.SportClubs
+                SportClubs = await _context.SportClub
                 .Include(i => i.Subscriptions)
                 .AsNoTracking()
                 .OrderBy(i => i.Title)
                 .ToListAsync()
             };
-
-
-            if (id != null)
+            if (ID != null)
             {
-                ViewData["SportClubId"] = ID;
-                var fanIds = _context.Subscriptions.Where(s => s.SportClubId == ID).Select(s => s.FanId).ToList();
+                ViewData["ClubID"] = ID;
+                var fanIds = _context.Subscriptions.Where(s => s.SportClubID == ID).Select(s => s.FanID).ToList();
                 viewModel.Fans = await _context.Fans.Where(f => fanIds.Contains(f.ID)).ToListAsync();
-            }
 
+            }
             return View(viewModel);
         }
 
         // GET: SportClubs/Details/5
         public async Task<IActionResult> Details(string id)
         {
-            if (id == null || _context.SportClubs == null)
+            if (id == null || _context.SportClub == null)
             {
                 return NotFound();
             }
 
-            var sportClub = await _context.SportClubs
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var sportClub = await _context.SportClub
+                .FirstOrDefaultAsync(m => m.ID == id);
             if (sportClub == null)
             {
                 return NotFound();
@@ -86,12 +84,12 @@ namespace Assignment2.Controllers
         // GET: SportClubs/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
-            if (id == null || _context.SportClubs == null)
+            if (id == null || _context.SportClub == null)
             {
                 return NotFound();
             }
 
-            var sportClub = await _context.SportClubs.FindAsync(id);
+            var sportClub = await _context.SportClub.FindAsync(id);
             if (sportClub == null)
             {
                 return NotFound();
@@ -106,7 +104,7 @@ namespace Assignment2.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("Id,Title,Fee")] SportClub sportClub)
         {
-            if (id != sportClub.Id)
+            if (id != sportClub.ID)
             {
                 return NotFound();
             }
@@ -120,7 +118,7 @@ namespace Assignment2.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!SportClubExists(sportClub.Id))
+                    if (!SportClubExists(sportClub.ID))
                     {
                         return NotFound();
                     }
@@ -137,14 +135,15 @@ namespace Assignment2.Controllers
         // GET: SportClubs/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
-            if (id == null || _context.SportClubs == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var sportClub = await _context.SportClubs
-                .Include(sc => sc.News)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var sportClub = await _context.SportClub
+                .Include(sc => sc.News) // Include News navigation property
+                .FirstOrDefaultAsync(m => m.ID == id);
+
             if (sportClub == null)
             {
                 return NotFound();
@@ -163,9 +162,9 @@ namespace Assignment2.Controllers
                 return NotFound();
             }
 
-            var sportClub = await _context.SportClubs
-                .Include(sc => sc.News) 
-                .FirstOrDefaultAsync(s => s.Id == id);
+            var sportClub = await _context.SportClub
+                .Include(sc => sc.News) // Include News navigation property
+                .FirstOrDefaultAsync(s => s.ID == id);
 
             if (sportClub == null)
             {
@@ -177,14 +176,14 @@ namespace Assignment2.Controllers
                 return View("Error"); // Show an error view if the sports club has news
             }
 
-            _context.SportClubs.Remove(sportClub);
+            _context.SportClub.Remove(sportClub);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool SportClubExists(string id)
         {
-            return _context.SportClubs.Any(e => e.Id == id);
+            return _context.SportClub.Any(e => e.ID == id);
         }
     }
 }

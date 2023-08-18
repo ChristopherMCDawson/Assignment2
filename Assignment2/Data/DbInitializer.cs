@@ -37,19 +37,19 @@ namespace Assignment2.Data
 
             foreach (var sportClub in sportClubs)
             {
-                context.SportClubs.Add(sportClub);
+                context.SportClub.Add(sportClub);
             }
 
             context.SaveChanges();
 
             var subscriptions = new[]
             {
-            new Subscription { FanId = 1, SportClubId = "A1" },
-            new Subscription { FanId = 1, SportClubId = "B1" },
-            new Subscription { FanId = 1, SportClubId = "O1" },
-            new Subscription { FanId = 2, SportClubId = "A1" },
-            new Subscription { FanId = 2, SportClubId = "B1" },
-            new Subscription { FanId = 3, SportClubId = "A1" }
+            new Subscription { FanId = 1, SportClubID = "A1" },
+            new Subscription { FanId = 1, SportClubID = "B1" },
+            new Subscription { FanId = 1, SportClubID = "O1" },
+            new Subscription { FanId = 2, SportClubID = "A1" },
+            new Subscription { FanId = 2, SportClubID = "B1" },
+            new Subscription { FanId = 3, SportClubID = "A1" }
 };
 
             foreach (var subscription in subscriptions)
