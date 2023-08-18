@@ -1,5 +1,6 @@
 ﻿using Assignment2.Data;
 using Assignment2.Models;
+using Assignment2.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,9 +16,24 @@ namespace Assignment2.Controllers
         }
 
         // GET: Fans
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? ID)
         {
-            return View(await _context.Fans.ToListAsync());
+            var viewModel = new SportClubViewModel
+            {
+                Fans = await _context.Fans
+              .Include(i => i.Subscriptions)
+              .AsNoTracking()
+              .OrderBy(i => i.LastName)
+              .ToListAsync()
+            };
+            if (ID != null)
+            {
+                ViewData["ClubID"] = ID;
+                var clubIds = _context.Subscriptions.Where(f => f.FanId == ID).Select(f => f.SportClubId).ToList();
+                viewModel.SportClubs = await _context.SportClubs.Where(s => clubIds.Contains(s.Id)).ToListAsync();
+
+            }
+            return View(viewModel);
         }
 
         // GET: Fans/Details/5
@@ -29,7 +45,7 @@ namespace Assignment2.Controllers
             }
 
             var fan = await _context.Fans
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.ID == id);
             if (fan == null)
             {
                 return NotFound();
@@ -120,7 +136,7 @@ namespace Assignment2.Controllers
             }
 
             var fan = await _context.Fans
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.ID == id);
             if (fan == null)
             {
                 return NotFound();
@@ -148,9 +164,36 @@ namespace Assignment2.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<IActionResult> EditSubscriptions(int? ID)
+        {
+            if (ID == null)
+            {
+                return NotFound();
+            }
+            var clubs = await _context.SportClubs.ToListAsync();
+            var fan = await _context.Fans.Include(i => i.Subscriptions).FirstOrDefaultAsync(f => f.ID == ID);
+
+            var viewModel = new FanSubscriptionViewModel
+            {
+                Fan = fan,
+                Subscriptions = clubs.Select(sport => new SportClubSubscriptionViewModel
+                {
+                    SportClubId = sport.Id,
+                    Title = sport.Title,
+                    IsMember = fan.Subscriptions?.Any(sub => sub.SportClubId == sport.Id) ?? false
+                })
+            };
+            return View(viewModel);
+        }
+
+
         private bool FanExists(int id)
         {
             return _context.Fans.Any(e => e.Id == id);
         }
     }
+
+  
+
+
 }
