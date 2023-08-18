@@ -5,7 +5,7 @@ namespace Assignment2.Models
 {
     public class Fan
     {
-        public int Id { get; set; }
+        public int ID { get; set; }
 
         [Required(ErrorMessage = "Last name is required")]
         [StringLength(50, ErrorMessage = "Last Name cannot be larger than 40 characters")]
