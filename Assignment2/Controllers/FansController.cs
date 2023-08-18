@@ -3,6 +3,11 @@ using Assignment2.Models;
 using Assignment2.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Assignment2.Controllers
 {
@@ -58,6 +63,33 @@ namespace Assignment2.Controllers
         public IActionResult Create()
         {
             return View();
+        }
+
+        public async Task<IActionResult> AddSub(int fanID, string clubID)
+        {
+            var fan = await _context.Fans.Include(i => i.Subscriptions).FirstOrDefaultAsync(f => f.ID == fanID);
+            if (fan != null)
+            {
+                fan.Subscriptions.Add(new Subscription { FanId = fanID, SportClubId = clubID });
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(EditSubscriptions), new { ID = fanID });
+        }
+
+        public async Task<IActionResult> RemoveSub(int fanID, string clubID)
+        {
+            var fan = await _context.Fans.Include(i => i.Subscriptions).FirstOrDefaultAsync(f => f.ID == fanID);
+            if (fan != null)
+            {
+                var subscription = fan.Subscriptions.FirstOrDefault(s => s.SportClubId == clubID);
+                if (subscription != null)
+                {
+                    _context.Subscriptions.Remove(subscription);
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            return RedirectToAction(nameof(EditSubscriptions), new { ID = fanID });
         }
 
         // POST: Fans/Create
