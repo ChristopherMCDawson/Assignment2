@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Xml.Linq;
 
 namespace Assignment2.Models
 {
@@ -21,6 +22,7 @@ namespace Assignment2.Models
         public decimal Fee { get; set; }
 
         public ICollection<Subscription> Subscriptions { get; set; }
+        public ICollection<News> News { get; set; }
     }
 
 }
