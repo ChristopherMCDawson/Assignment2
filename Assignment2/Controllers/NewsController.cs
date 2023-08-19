@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Assignment2.Data;
+﻿using Assignment2.Data;
 using Assignment2.Models;
 using Assignment2.Models.ViewModels;
-using Azure.Storage.Blobs;
 using Azure;
-using System.Security.Cryptography;
+using Azure.Storage.Blobs;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Assignment2.Controllers
 {
@@ -130,6 +124,11 @@ namespace Assignment2.Controllers
         // GET: News/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            if (id is null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
             if (id == null || _context.News == null)
             {
                 return NotFound();

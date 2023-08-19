@@ -16,7 +16,7 @@ namespace Assignment2.Controllers
         }
 
         // GET: SportClubs
-        public async Task<IActionResult> Index(String? ID)
+        public async Task<IActionResult> Index(String ID)
         {
             var viewModel = new SportClubViewModel
             {
