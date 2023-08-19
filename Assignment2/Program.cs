@@ -18,7 +18,8 @@ namespace Assignment2
             builder.Services.AddSingleton(new BlobServiceClient(blobConnection));
 
             var connection = builder.Configuration.GetConnectionString("DefaultConnection");
-            builder.Services.AddDbContext<SportsDbContext>(options => options.UseSqlServer(connection));
+            builder.Services.AddDbContext<SportsDbContext>(options => options.UseSqlServer(connection), ServiceLifetime.Scoped);
+
             builder.Services.AddSession();
             var app = builder.Build();
 
