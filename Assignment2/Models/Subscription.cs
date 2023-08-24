@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Security.Policy;
-
-namespace Assignment2.Models
+﻿namespace Assignment2.Models
 {
     public class Subscription
     {
