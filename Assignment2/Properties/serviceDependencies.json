@@ -10,7 +10,7 @@
     },
     "storage1": {
       "type": "storage",
-      "connectionId": "ConnectionStrings:DefaultDBConnection",
+      "connectionId": "ConnectionStrings:AzureBlobStorage",
       "dynamicId": null
     }
   }
